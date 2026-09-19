@@ -1,96 +1,88 @@
 # KELASIN
 
-KELASIN is a small class-management dashboard made for university students. The idea is simple: keep a student's weekly schedule and class assignments in one place without turning it into another complicated academic system.
+A small class management web app made for **Teknik Informatika 2026 B**.
 
-This is **version 1.0**, built as a semester 1 Informatics Engineering project. The focus is on learning the basics of web development: HTML structure, CSS layout, JavaScript DOM manipulation, simple CRUD, and browser storage.
+KELASIN is intentionally simple. It is a semester-1 style project built with plain HTML, CSS, and JavaScript instead of a framework or backend.
 
 ## What it can do
 
-- View a class dashboard
-- See today's classes
-- Add classes to a weekly schedule
-- Add, search, complete, and delete assignments
-- Save data with `localStorage`, so it stays after refreshing the page
-- Toggle between light and dark mode
-- Responsive layout for desktop and smaller screens
+### Dashboard
+- Shows today's classes
+- Shows pending and overdue assignments
+- Shows the next class
+- Quick actions for adding a class or assignment
 
-## Tech stack
+### Schedule
+- Add a class
+- Edit a class
+- Delete a class
+- Sorts classes by day and start time
+- Highlights the current day
+- Prevents overlapping classes
 
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- Browser `localStorage`
-- Lucide icons
-- Git + GitHub
+### Assignments
+- Add an assignment
+- Edit an assignment
+- Delete an assignment
+- Mark work as done / pending
+- Search by assignment or subject
+- Filter by all, pending, done, or overdue
 
-There is no framework, backend, database server, authentication, or AI API in v1.0. Keeping the project small is intentional.
+### General
+- Data is stored locally with `localStorage`
+- Dark mode is the default
+- Light mode is available and remembered
+- Responsive layout for desktop, tablet, and phone
+- No account, backend, or AI service required
+- Built-in form validation and simple error handling
 
 ## Run locally
 
-### Windows / macOS / Linux
+### Windows
 
-1. Download or clone the repository.
-2. Open the folder in VS Code.
-3. Open `index.html` with Live Server.
-4. The app should open in your browser.
+1. Install [VS Code](https://code.visualstudio.com/).
+2. Open this folder in VS Code.
+3. Install the **Live Server** extension.
+4. Right-click `index.html` and choose **Open with Live Server**.
 
-You can also open `index.html` directly in a modern browser, but Live Server is recommended while developing.
+### macOS
 
-### With Git
+1. Open this folder in VS Code.
+2. Install **Live Server** if you do not already have it.
+3. Right-click `index.html` and choose **Open with Live Server**.
 
-```bash
-git clone https://github.com/your-username/kelasin.git
-cd kelasin
-```
+### Linux
 
-Then open the folder in VS Code and run `index.html` with Live Server.
+The same Live Server steps work on Linux. You can also open `index.html` directly in a browser for the basic app because there is no backend.
 
 ## Project structure
 
 ```text
-kelasin/
+kelasin-v1/
 ├── index.html
 ├── css/
 │   └── style.css
 ├── js/
 │   └── app.js
 ├── assets/
-└── README.md
+├── README.md
+└── .gitignore
 ```
+
+## Tech stack
+
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- localStorage
+- Git / GitHub
+
+No framework is used on purpose. The goal is to keep the project easy to read and understand while learning the fundamentals.
 
 ## Notes
 
-KELASIN is intentionally local-first for the first release. Class and assignment data are stored only in the browser using `localStorage`.
+KELASIN is a local browser app in its current version. Clearing browser site data will also clear saved KELASIN data. The dashboard includes a **Reset demo data** action for quickly returning to the starter state.
 
-That means:
+## Author
 
-- data is not uploaded to a server;
-- clearing browser site data can remove saved entries;
-- the data is tied to the browser/device where it was entered.
-
-## Roadmap
-
-### v1.0 — Current
-- Dashboard
-- Schedule CRUD (add)
-- Assignment CRUD
-- Search assignments
-- Light/dark theme
-- Local storage
-- Responsive layout
-
-### Possible v1.1
-- Edit schedule entries
-- Edit assignments
-- Attendance tracker
-- Notes per subject
-- Weekly calendar view
-- Export/import local data
-
-## Why this project exists
-
-I wanted a project that was useful for an actual student but still small enough to understand from top to bottom. KELASIN is a practice project for learning web fundamentals before moving on to larger applications and frameworks.
-
----
-
-Made by a first-semester Informatics Engineering student.
+Mikael — Informatics Engineering student
