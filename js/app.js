@@ -6,6 +6,7 @@ const DAY_INDEX = Object.fromEntries(DAYS.map((day, index) => [day, index]));
 const page = document.getElementById("page");
 const sidebar = document.getElementById("sidebar");
 const themeButton = document.getElementById("themeButton");
+const installButton = document.getElementById("installButton");
 const menuButton = document.getElementById("menuButton");
 const mobileScrim = document.getElementById("mobileScrim");
 const modalBackdrop = document.getElementById("modalBackdrop");
@@ -20,6 +21,7 @@ let assignmentFilter = "all";
 let modalState = null;
 let lastFocusedElement = null;
 let toastTimer = null;
+let deferredInstallPrompt = null;
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -183,18 +185,32 @@ function sortAssignments(items) {
   });
 }
 
-function render() {
-  document.querySelectorAll(".nav-item").forEach(item => {
-    item.classList.toggle("active", item.dataset.section === currentSection);
-  });
+function render(immediate = false) {
+  const update = () => {
+    document.querySelectorAll(".nav-item").forEach(item => {
+      item.classList.toggle("active", item.dataset.section === currentSection);
+    });
 
-  topbarTitle.textContent = currentSection === "dashboard"
-    ? "Teknik Informatika 2026 B"
-    : currentSection[0].toUpperCase() + currentSection.slice(1);
+    topbarTitle.textContent = currentSection === "dashboard"
+      ? "Teknik Informatika 2026 B"
+      : currentSection[0].toUpperCase() + currentSection.slice(1);
 
-  if (currentSection === "dashboard") renderDashboard();
-  if (currentSection === "schedule") renderSchedule();
-  if (currentSection === "assignments") renderAssignments();
+    if (currentSection === "dashboard") renderDashboard();
+    if (currentSection === "schedule") renderSchedule();
+    if (currentSection === "assignments") renderAssignments();
+  };
+
+  if (immediate || typeof document.startViewTransition !== "function") {
+    update();
+    return;
+  }
+
+  try {
+    document.startViewTransition(update);
+  } catch (error) {
+    console.warn("KELASIN: view transition skipped.", error);
+    update();
+  }
 }
 
 function renderDashboard() {
@@ -246,7 +262,7 @@ function renderDashboard() {
     <section class="card quick-note">
       <div class="quick-note-copy">
         <span class="soft-icon">${icon("database")}</span>
-        <div><strong>Everything stays on this device.</strong><p>KELASIN uses localStorage, so there is no account or server behind this v1.</p></div>
+        <div><strong>Everything stays on this device.</strong><p>KELASIN uses localStorage, so there is no account or server behind this version.</p></div>
       </div>
       <button class="link-button" type="button" data-action="reset-data">Reset demo data</button>
     </section>
@@ -336,7 +352,7 @@ function renderAssignments() {
   const filtered = sortAssignments(data.assignments).filter(item => {
     const searchMatch = `${item.title} ${item.subject}`.toLowerCase().includes(assignmentQuery.toLowerCase());
     const filterMatch = assignmentFilter === "all" ||
-      (assignmentFilter === "pending" && !item.done && !isOverdue(item)) ||
+      (assignmentFilter === "pending" && !item.done) ||
       (assignmentFilter === "done" && item.done) ||
       (assignmentFilter === "overdue" && isOverdue(item));
     return searchMatch && filterMatch;
@@ -344,7 +360,7 @@ function renderAssignments() {
 
   const counts = {
     all: data.assignments.length,
-    pending: data.assignments.filter(item => !item.done && !isOverdue(item)).length,
+    pending: data.assignments.filter(item => !item.done).length,
     done: data.assignments.filter(item => item.done).length,
     overdue: data.assignments.filter(isOverdue).length
   };
@@ -420,6 +436,7 @@ function openModal(type, id = null) {
 
   modalForm.innerHTML = isAssignment ? assignmentFormMarkup(item) : scheduleFormMarkup(item);
   modalBackdrop.classList.remove("hidden");
+  modalBackdrop.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
 
   requestAnimationFrame(() => {
@@ -518,6 +535,7 @@ function setFieldError(input, message) {
 function closeModal() {
   if (modalBackdrop.classList.contains("hidden")) return;
   modalBackdrop.classList.add("hidden");
+  modalBackdrop.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
   modalState = null;
   modalForm.innerHTML = "";
@@ -630,6 +648,8 @@ function icon(name) {
     pencil: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z"></path><line x1="13.5" y1="6.5" x2="17.5" y2="10.5"></line></svg>',
     trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="4,7 20,7"></polyline><path d="M9 7V4h6v3"></path><path d="M7 7l1 13h8l1-13"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>',
     x: '<svg viewBox="0 0 24 24" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>',
+    download: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11"></path><polyline points="7,10 12,15 17,10"></polyline><path d="M5 19h14"></path></svg>',
+    refresh: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3.7L4 9"></path><path d="M4 4v5h5"></path><path d="M4 13a8 8 0 0 0 14.9 3.7L20 15"></path><path d="M20 20v-5h-5"></path></svg>',
     inbox: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l2 8v6H2v-6l2-8Z"></path><path d="M2 13h5l2 3h6l2-3h5"></path></svg>',
     check: '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="5,12 10,17 19,7"></polyline></svg>',
     alert: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2L12 3Z"></path><line x1="12" y1="9" x2="12" y2="14"></line><circle cx="12" cy="17" r=".8"></circle></svg>'
@@ -653,6 +673,13 @@ function applyStoredTheme() {
   themeButton.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
   themeButton.setAttribute("title", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
 }
+
+if (installButton) installButton.innerHTML = icon("download");
+if (menuButton) menuButton.innerHTML = icon("menu");
+if (modalClose) modalClose.innerHTML = icon("x");
+document.querySelectorAll("[data-icon]").forEach(element => {
+  element.innerHTML = icon(element.dataset.icon);
+});
 
 function setSidebarOpen(open) {
   sidebar.classList.toggle("open", open);
@@ -740,6 +767,42 @@ modalClose.addEventListener("click", closeModal);
 modalBackdrop.addEventListener("click", event => {
   if (event.target === modalBackdrop) closeModal();
 });
+
+installButton?.addEventListener("click", async () => {
+  if (!deferredInstallPrompt) {
+    showToast("Use your browser’s Add to Dock / Install option.", "error");
+    return;
+  }
+
+  deferredInstallPrompt.prompt();
+  const result = await deferredInstallPrompt.userChoice;
+  if (result.outcome === "accepted") showToast("KELASIN is being installed.");
+  deferredInstallPrompt = null;
+  installButton.hidden = true;
+});
+
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  if (!window.matchMedia("(display-mode: standalone)").matches) installButton.hidden = false;
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  if (installButton) installButton.hidden = true;
+  showToast("KELASIN is now installed.");
+});
+
+window.addEventListener("online", () => showToast("Back online."));
+window.addEventListener("offline", () => showToast("Offline mode — your local data is still available.", "error"));
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(error => {
+      console.warn("KELASIN: service worker registration failed.", error);
+    });
+  });
+}
 
 document.addEventListener("keydown", event => {
   if (event.key === "Escape") {

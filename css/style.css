@@ -357,3 +357,245 @@ h1 { margin: 0; font-size: clamp(29px, 4vw, 41px); line-height: 1.04; letter-spa
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* --- v1.2 polish: restrained motion + app-like surfaces --- */
+:root {
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --spring: cubic-bezier(.34, 1.35, .64, 1);
+}
+
+html { scrollbar-gutter: stable; }
+body {
+  background:
+    radial-gradient(circle at 74% -6%, rgba(154, 150, 255, .055), transparent 28rem),
+    var(--bg);
+}
+
+.main-content { position: relative; }
+
+.card,
+.nav-item,
+.primary-button,
+.secondary-button,
+.icon-button,
+.filter-tab,
+.list-item,
+.schedule-row,
+.assignment-row,
+.input,
+.select {
+  will-change: transform;
+}
+
+.card {
+  transition:
+    transform .36s var(--ease-out),
+    border-color .24s ease,
+    background-color .24s ease,
+    box-shadow .36s var(--ease-out);
+}
+.card:hover {
+  transform: translateY(-1px);
+}
+
+.primary-button,
+.secondary-button,
+.icon-button,
+.filter-tab,
+.nav-item {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.primary-button,
+.secondary-button {
+  transition:
+    transform .24s var(--spring),
+    box-shadow .28s var(--ease-out),
+    background-color .22s ease,
+    color .22s ease,
+    border-color .22s ease;
+}
+
+.primary-button:hover,
+.secondary-button:hover {
+  transform: translateY(-1px);
+}
+.primary-button:active,
+.secondary-button:active,
+.icon-button:active,
+.filter-tab:active,
+.nav-item:active {
+  transform: scale(.975);
+}
+
+.icon-button svg,
+.primary-button svg,
+.secondary-button svg,
+.link-button svg,
+.nav-item svg {
+  transition: transform .26s var(--spring);
+}
+.icon-button:hover svg,
+.primary-button:hover svg,
+.secondary-button:hover svg,
+.link-button:hover svg {
+  transform: translateX(1px);
+}
+
+.page > * {
+  animation: kelasin-page-in .48s var(--ease-out) both;
+}
+.page > *:nth-child(2) { animation-delay: 35ms; }
+.page > *:nth-child(3) { animation-delay: 65ms; }
+.page > *:nth-child(4) { animation-delay: 90ms; }
+
+.stat-card .stat-icon {
+  transition: transform .34s var(--spring), background-color .2s ease, color .2s ease;
+}
+.stat-card:hover .stat-icon {
+  transform: rotate(-4deg) scale(1.04);
+}
+
+.list-item,
+.schedule-row,
+.assignment-row {
+  transition:
+    transform .22s var(--ease-out),
+    background-color .22s ease,
+    border-color .22s ease,
+    opacity .22s ease;
+}
+.list-item-button:hover,
+.schedule-row:hover,
+.assignment-row:hover {
+  transform: translateY(-1px);
+}
+
+.status-dot {
+  transition: transform .34s var(--spring), background-color .2s ease;
+}
+.list-item-button:hover .status-dot {
+  transform: scale(1.15);
+}
+
+.custom-check {
+  transition:
+    transform .22s var(--spring),
+    background-color .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+.check-wrap input:checked + .custom-check {
+  animation: kelasin-check .24s var(--spring);
+}
+
+.toast-region { perspective: 700px; }
+.toast {
+  transform-origin: center bottom;
+  animation: kelasin-toast-in .42s var(--spring) both;
+}
+
+.modal-backdrop {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity .28s ease, visibility .28s ease;
+}
+.modal-backdrop.hidden {
+  display: grid;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.modal {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  transition: transform .38s var(--spring), opacity .24s ease;
+}
+.modal-backdrop.hidden .modal {
+  transform: translateY(8px) scale(.975);
+  opacity: 0;
+}
+
+.install-button:not([hidden]) {
+  animation: kelasin-attention 2.2s var(--ease-in-out) infinite;
+}
+
+.search-wrap .svg-icon {
+  transition: color .22s ease, transform .24s var(--spring);
+}
+.search-wrap:focus-within .svg-icon {
+  color: var(--accent);
+  transform: translateY(-50%) scale(1.08);
+}
+
+::view-transition-old(app-page),
+::view-transition-new(app-page) {
+  animation-duration: .28s;
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-old(app-page) { animation-name: kelasin-old-page; }
+::view-transition-new(app-page) { animation-name: kelasin-new-page; }
+
+.page { view-transition-name: app-page; }
+
+@keyframes kelasin-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kelasin-old-page {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-3px); }
+}
+
+@keyframes kelasin-new-page {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kelasin-check {
+  0% { transform: scale(.8); }
+  70% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@keyframes kelasin-toast-in {
+  from { opacity: 0; transform: translateY(10px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes kelasin-attention {
+  0%, 72%, 100% { transform: translateY(0); }
+  76% { transform: translateY(-1px) scale(1.015); }
+  80% { transform: translateY(0); }
+}
+
+@media (max-width: 720px) {
+  .card:hover { transform: none; }
+  .list-item-button:hover,
+  .schedule-row:hover,
+  .assignment-row:hover { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page > *,
+  .toast,
+  .install-button:not([hidden]) {
+    animation: none !important;
+  }
+  .modal-backdrop,
+  .modal,
+  .card,
+  .list-item,
+  .schedule-row,
+  .assignment-row,
+  .primary-button,
+  .secondary-button,
+  .icon-button,
+  .filter-tab,
+  .nav-item {
+    transition: none !important;
+  }
+}

@@ -4,12 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f1013">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KELASIN">
   <meta name="description" content="KELASIN — a lightweight class management app for university students.">
   <title>KELASIN — Class Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/lucide-static@0.468.0/font/lucide.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" sizes="180x180">
+  <script>try{const t=localStorage.getItem('kelasin-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -17,7 +24,9 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-top">
         <div class="brand">
-          <div class="brand-mark" aria-hidden="true">K</div>
+          <div class="brand-mark">
+            <img src="assets/icon.svg" alt="" aria-hidden="true">
+          </div>
           <div class="brand-copy">
             <strong>KELASIN</strong>
             <span>Class dashboard</span>
@@ -48,7 +57,7 @@
             <p>Your data stays in this browser.</p>
           </div>
         </div>
-        <span class="version-label">v1.1</span>
+        <span class="version-label">v1.2</span>
       </div>
     </aside>
 
@@ -59,8 +68,9 @@
         <button class="icon-button mobile-menu" id="menuButton" type="button" aria-label="Open menu" aria-expanded="false">
           <span class="nav-icon" data-icon="menu" aria-hidden="true"></span>
         </button>
-        <div class="topbar-title" id="topbarTitle">Teknik Informatika 2026 B</div>
+        <div class="topbar-title" id="topbarTitle">Teknik Informatika 2026</div>
         <div class="topbar-actions">
+          <button class="icon-button install-button" id="installButton" type="button" aria-label="Install KELASIN" title="Install KELASIN" hidden></button>
           <button class="icon-button" id="themeButton" type="button" aria-label="Switch to light mode"></button>
         </div>
       </header>
