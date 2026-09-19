@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="KELASIN — a simple class management dashboard for university students." />
+  <title>KELASIN — Class Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/lucide-static@0.468.0/font/lucide.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">K</div>
+        <div>
+          <strong>KELASIN</strong>
+          <span>Class Dashboard</span>
+        </div>
+      </div>
+
+      <nav class="nav-list" aria-label="Main navigation">
+        <button class="nav-item active" data-section="dashboard"><i class="icon icon-layout-dashboard"></i><span>Dashboard</span></button>
+        <button class="nav-item" data-section="schedule"><i class="icon icon-calendar-days"></i><span>Schedule</span></button>
+        <button class="nav-item" data-section="assignments"><i class="icon icon-notebook-tabs"></i><span>Assignments</span></button>
+      </nav>
+
+      <div class="sidebar-note">
+        <span>v1.0</span>
+        <p>Project Suka Suka.</p>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="icon-button mobile-menu" id="menuButton" aria-label="Open menu"><i class="icon icon-menu"></i></button>
+        <div class="breadcrumb">Teknik Informatika 2026 B</div>
+        <div class="topbar-actions">
+          <button class="icon-button" id="themeButton" aria-label="Toggle theme"><i class="icon icon-sun"></i></button>
+        </div>
+      </header>
+
+      <div class="page" id="page"></div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow" id="modalEyebrow">NEW</p>
+          <h2 id="modalTitle">Add assignment</h2>
+        </div>
+        <button class="icon-button" id="modalClose" aria-label="Close"><i class="icon icon-x"></i></button>
+      </div>
+      <form id="modalForm"></form>
+    </section>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
