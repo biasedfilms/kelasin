@@ -1,133 +1,170 @@
 # KELASIN
 
-**v1.4.0 pre-release — local-first class manager + PWA**
+### Your classes, assignments, and academic schedule in one place.
 
-KELASIN is a small class management web app made for **Teknik Informatika 2026 B**.
+**v1.0 Release**
 
-The project stays intentionally lightweight: plain HTML, CSS, and vanilla JavaScript, with browser storage instead of a backend. The goal is to build something useful while still keeping the code understandable for a semester-1 Informatics Engineering student.
+[View the KELASIN repository](https://github.com/biasedfilms/kelasin)
 
-## What it can do
+KELASIN is a student-focused, local-first class management app for organizing recurring classes, assignments, calendar activity, lecturers, subjects, and holidays in one focused workspace.
+
+## Preview
+
+<p align="center">
+  <img src="assets/screenshots/preview-dashboard.png" alt="KELASIN Dashboard" width="900">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/preview-schedule.png" alt="KELASIN Schedule" width="900">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/preview-calendar.png" alt="KELASIN Calendar" width="900">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/preview-assignments.png" alt="KELASIN Assignments" width="900">
+</p>
+
+### First Launch
+
+<p align="center">
+  <img src="assets/screenshots/preview-launch.png" alt="KELASIN First Launch" width="48%">
+  <img src="assets/screenshots/preview-launch2.png" alt="KELASIN Profile Setup" width="48%">
+</p>
+
+## What's included in v1.0
+
+- Recurring weekly class management with lecturer and room details.
+- Monthly calendar for classes and assignment deadlines.
+- Date-specific holidays that skip recurring classes without changing the weekly schedule.
+- Holiday-aware Dashboard, Calendar, and next-class information.
+- Assignment tracking with search, filters, completion states, and overdue status.
+- Subject and lecturer autocomplete based on existing local class data.
+- English and Bahasa Indonesia interface support.
+- Dark and light themes.
+- JSON backup export and import.
+- Installable PWA with responsive desktop and mobile layouts.
+
+## Product Overview
+
+KELASIN is designed for students who want a clear view of their weekly classes and upcoming academic work without creating an account or depending on a cloud service.
+
+The app keeps recurring classes, assignments, calendar dates, lecturers, and holidays together. The weekly schedule remains stable, while the Calendar and Dashboard show what actually applies to a specific date.
+
+## Features
 
 ### Dashboard
-- Shows today's classes, pending work, overdue work, and the next class.
+
+The Dashboard gives a quick view of the day:
+
+- Today's classes and current class state.
+- Pending assignment count and overdue work.
+- The next scheduled class.
+- Holiday-aware empty states when classes do not take place.
 - Quick actions for adding a class or assignment.
-- Local-first status so it is clear that data stays in the browser.
-- Restore the starter workspace through a proper confirmation flow.
 
 ### Schedule
+
+Schedule represents the recurring weekly timetable.
+
 - Add, edit, and delete classes.
-- Sorts classes by weekday and start time.
-- Highlights the current day.
-- Prevents overlapping classes on the same weekday.
-- Supports quick creation from the calendar.
+- Organize classes by weekday and start time.
+- Store subject, lecturer, room, start time, and end time.
+- Prevent overlapping classes on the same day.
+- Keep the recurring schedule unchanged when a holiday is added.
 
 ### Calendar
-- Month view mapped to the saved weekly schedule.
-- Classes repeat automatically on their matching weekday.
-- Assignment deadlines appear on their actual dates.
-- Selected-day agenda shows classes and due work together.
-- Previous / next month and Today controls.
-- Mobile-friendly calendar with a compact agenda below it.
+
+Calendar maps the recurring schedule and assignments onto actual dates.
+
+- Monthly view with previous month, next month, and Today controls.
+- Recurring classes shown on their matching weekdays.
+- Assignment deadlines shown on their due dates.
+- Selected-day agenda for classes and assignments.
+- Quick class creation from the selected date.
+- Holiday indicators and holiday details.
+- Classes hidden on holidays while assignments remain visible.
 
 ### Assignments
-- Add, edit, and delete assignments.
-- Mark work as done or move it back to pending.
-- Search by title or subject.
+
+- Add, edit, delete, and complete assignments.
+- Search by assignment title or subject.
 - Filter by all, pending, done, or overdue.
-- Automatic deadline labels such as Today, Tomorrow, and Overdue.
+- See due-date labels and overdue states at a glance.
 
-### Settings & data
-- English / Bahasa Indonesia interface switch.
-- Dark mode by default, with Light mode available.
-- Language and theme choices are remembered locally.
-- Export a JSON backup of the current workspace.
-- Import a previously exported backup.
-- Restore the sample workspace with a clear confirmation dialog.
-- Small keyboard shortcuts for desktop: `N`, `A`, `/`, and `Esc`.
+### Holidays
 
-### App / PWA
-- Installable as a PWA on supported browsers.
-- Offline app-shell caching through a service worker.
-- Custom favicon, PWA icons, and Apple touch icon.
-- Responsive desktop, tablet, and mobile layouts.
-- Reduced-motion support for accessibility.
-- No account, backend, or AI service required.
+Holidays are local, date-specific exceptions to the recurring class schedule.
 
-## Run locally
+- Add a holiday name and date.
+- Edit or delete existing holidays.
+- Hide recurring classes on marked dates without deleting the original class.
+- Keep assignment deadlines visible on holidays.
+- Reflect holidays in Calendar, Dashboard, and next-class lookup.
+- Restore normal class behavior automatically when a holiday is deleted.
 
-Use a local development server for the full experience. Service workers and PWA installation do not work from `file://`.
+### Subjects & Lecturers
 
-### Windows
+Class forms include both subject and lecturer information.
 
-1. Install [VS Code](https://code.visualstudio.com/).
-2. Open the KELASIN folder.
-3. Install the **Live Server** extension.
-4. Right-click `index.html` and choose **Open with Live Server**.
+- Subject autocomplete from existing local classes.
+- Lecturer autocomplete from existing local classes.
+- Unique suggestions with case-insensitive, whitespace-tolerant matching.
+- Arrow-key navigation, Enter selection, Escape dismissal, mouse selection, and touch support.
+- Manual entry remains available for new subjects and lecturers.
 
-### macOS
+### Settings & Personalization
 
-1. Open the KELASIN folder in VS Code.
-2. Install **Live Server** if it is not already installed.
-3. Right-click `index.html` and choose **Open with Live Server**.
+- English and Bahasa Indonesia interface.
+- Dark and light themes.
+- Local holiday management.
+- JSON export and import for workspace backups.
+- First-launch profile setup for a name and class or group.
+- Delete-all-data reset that returns the app to its initial state.
 
-### Linux
+## Local-first by design
 
-The same Live Server steps work on Linux. A simple static server also works, for example:
+KELASIN stores profile data, classes, assignments, preferences, and holidays in the browser using `localStorage`.
 
-```bash
-python3 -m http.server 5500
-```
+No account, backend, cloud synchronization, analytics service, or external holiday API is required. JSON export and import make it possible to create a backup or move a workspace manually.
 
-Then open `http://localhost:5500`.
+Clearing browser or site data can remove the local workspace, so export a backup before changing browsers or devices.
 
-## Project structure
+## Installable
 
-```text
-kelasin/
-├── index.html
-├── css/
-│   └── style.css
-├── js/
-│   └── app.js
-├── assets/
-│   ├── icon.svg
-│   ├── favicon.svg
-│   ├── favicon-32.png
-│   ├── favicon.ico
-│   ├── icon-192.png
-│   ├── icon-512.png
-│   └── apple-touch-icon.png
-├── manifest.webmanifest
-├── sw.js
-├── README.md
-└── .gitignore
-```
+KELASIN works as a Progressive Web App with a web app manifest, application icons, a service worker, and a cached application shell. It is designed for modern desktop and mobile browsers and can be installed as a standalone app where the platform supports PWA installation.
 
-## Tech stack
+## Designed for everyday use
 
-- HTML5
-- CSS3
+The interface is intentionally minimal and focused, with responsive layouts for desktop, tablet, and mobile screens. Dark and light themes, touch-friendly controls, subtle transitions, keyboard focus handling, and reduced-motion support are built into the experience.
+
+## Built with
+
+- HTML
+- CSS
 - Vanilla JavaScript
+- Browser Web APIs
 - `localStorage`
-- Web App Manifest + Service Worker (PWA)
-- Git / GitHub
+- Service Worker
+- Web App Manifest
 
-No framework is used on purpose. The app is small enough to understand from the source and strong enough to behave like a real installable web app.
+## Browser notes
 
-## Data & privacy
+KELASIN is intended for modern browsers. PWA installation and offline application-shell behavior can vary by browser and platform.
 
-KELASIN is local-first in this version. Class and assignment data is stored in the browser using `localStorage`. There is no login or application server behind the project.
+## v1.0 Release
 
-Clearing the browser's site data will also clear the saved workspace. Use **Settings → Export backup** before moving browsers or devices if you want to keep a copy.
+KELASIN v1.0 is the first official public release of the complete local-first class management experience.
 
-The **Restore sample workspace** action intentionally replaces the current local workspace with the starter data and asks for confirmation first.
+## Changelog
 
-## Pre-release notes
+See [CHANGELOG.md](CHANGELOG.md) for the detailed development history.
 
-This pre-release focuses on the final product feel rather than adding a large number of new modules: smoother motion, clearer states, responsive behavior, bilingual UI, backup/restore tools, keyboard shortcuts, and more consistent PWA behavior.
+## Repository
 
-The project has been statically checked for JavaScript/service-worker syntax and core asset references. Browser-specific PWA behavior still depends on the browser and hosting environment.
+[github.com/biasedfilms/kelasin](https://github.com/biasedfilms/kelasin)
 
-## Author
+## License
 
-Mikael — Informatics Engineering student
+MIT. See [LICENSE](LICENSE).

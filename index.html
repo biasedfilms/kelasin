@@ -1,42 +1,115 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0f1013">
-  <meta name="color-scheme" content="dark light">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="KELASIN">
-  <meta name="description" content="KELASIN — a lightweight, local-first class dashboard for university students.">
-  <meta name="application-name" content="KELASIN">
-  <meta property="og:title" content="KELASIN — Class Dashboard">
-  <meta property="og:description" content="A lightweight, local-first class dashboard for university students.">
-  <meta property="og:image" content="assets/icon-512.png">
-  <title>KELASIN — Class Dashboard</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
-  <link rel="icon" href="assets/favicon.ico" sizes="any">
-  <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" sizes="180x180">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1013" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="KELASIN" />
+  <meta name="description" content="KELASIN — a lightweight class dashboard for university students." />
+  <meta name="application-name" content="KELASIN" />
+  <meta property="og:title" content="KELASIN — Class Dashboard" />
+  <meta property="og:description" content="A lightweight class dashboard for university students." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/icon-512.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="KELASIN — Class Dashboard" />
+  <meta name="twitter:description" content="A lightweight class dashboard for university students." />
+  <title>Kelasin</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/icons/favicon.ico" sizes="any" />
+  <link rel="icon" href="assets/icons/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" sizes="180x180" />
   <script>
     try {
-      const theme = localStorage.getItem('kelasin-theme');
-      const language = localStorage.getItem('kelasin-language');
-      if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
-      if (language === 'id' || language === 'en') document.documentElement.lang = language;
-    } catch (_) {}
+      const theme = localStorage.getItem("kelasin-theme");
+      const language = localStorage.getItem("kelasin-language");
+      if (theme === "light" || theme === "dark")
+        document.documentElement.dataset.theme = theme;
+      if (language === "id" || language === "en")
+        document.documentElement.lang = language;
+    } catch (_) { }
   </script>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=1.6.5" />
 </head>
+
 <body>
+  <div class="welcome-screen hidden" id="welcomeScreen" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <div class="welcome-backdrop" aria-hidden="true"></div>
+    <section class="welcome-panel">
+      <div class="welcome-glow" aria-hidden="true"></div>
+      <div class="welcome-top">
+        <div class="welcome-brand">
+          <div class="welcome-mark">
+            <img src="assets/icons/icon.svg" alt="" aria-hidden="true" />
+          </div>
+          <span>KELASIN</span>
+        </div>
+        <button class="welcome-language" id="welcomeLanguageButton" type="button" aria-label="Change language">
+          <span id="welcomeLanguageCode">EN</span>
+        </button>
+      </div>
+      <div class="welcome-progress" aria-hidden="true">
+        <span id="welcomeProgressLabel">1 / 2</span>
+        <span class="welcome-progress-track"><i id="welcomeProgressFill"></i></span>
+      </div>
+      <div class="welcome-content">
+        <div class="welcome-step is-active" id="welcomeStepName" data-step="1">
+          <p class="eyebrow" data-i18n="welcome.step1.eyebrow">
+            YOUR CLASS SPACE
+          </p>
+          <h1 id="welcomeTitle" data-i18n="welcome.step1.title">
+            Welcome to KELASIN
+          </h1>
+          <p class="welcome-copy" data-i18n="welcome.step1.copy">
+            Let's make your class space feel like yours.
+          </p>
+          <div class="welcome-field">
+            <label for="welcomeName" data-i18n="welcome.nameLabel">Your name</label>
+            <input class="input welcome-input" id="welcomeName" type="text" maxlength="40" autocomplete="name"
+              data-i18n-placeholder="welcome.placeholder" placeholder="Enter your name" />
+            <span class="welcome-error" id="welcomeError" role="alert"></span>
+          </div>
+        </div>
+        <div class="welcome-step" id="welcomeStepClass" data-step="2" hidden>
+          <p class="eyebrow" data-i18n="welcome.step2.eyebrow">
+            CLASS DETAILS
+          </p>
+          <h1 data-i18n="welcome.step2.title">What are you working with?</h1>
+          <p class="welcome-copy" data-i18n="welcome.step2.copy">
+            Add your class or group name. You can change it later.
+          </p>
+          <div class="welcome-field">
+            <label for="welcomeClass" data-i18n="welcome.classLabel">Class or group</label>
+            <input class="input welcome-input" id="welcomeClass" type="text" maxlength="60" autocomplete="organization"
+              data-i18n-placeholder="welcome.classPlaceholder" placeholder="Enter your class or group" />
+            <span class="welcome-hint" data-i18n="welcome.classHint">This name appears in the app header.</span>
+            <span class="welcome-error" id="welcomeClassError" role="alert"></span>
+          </div>
+        </div>
+      </div>
+      <div class="welcome-footer" id="welcomeFooter">
+        <button class="secondary-button welcome-back" id="welcomeBack" type="button" data-i18n="welcome.back" hidden>
+          Back
+        </button>
+        <button class="primary-button welcome-continue" id="welcomeContinue" type="button">
+          <span data-i18n="welcome.continue">Continue</span><span class="welcome-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+  </div>
+
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-top">
         <div class="brand">
           <div class="brand-mark">
-            <img src="assets/icon.svg" alt="" aria-hidden="true">
+            <img src="assets/icons/icon.svg" alt="" aria-hidden="true" />
           </div>
           <div class="brand-copy">
             <strong>KELASIN</strong>
@@ -45,23 +118,31 @@
         </div>
 
         <nav class="nav-list" aria-label="Main navigation" data-i18n-aria="nav.main">
-          <button class="nav-item active" type="button" data-section="dashboard"><span class="nav-icon" aria-hidden="true" data-icon="grid"></span><span data-i18n="nav.dashboard">Dashboard</span></button>
-          <button class="nav-item" type="button" data-section="schedule"><span class="nav-icon" aria-hidden="true" data-icon="calendar"></span><span data-i18n="nav.schedule">Schedule</span></button>
-          <button class="nav-item" type="button" data-section="calendar"><span class="nav-icon" aria-hidden="true" data-icon="calendar-days"></span><span data-i18n="nav.calendar">Calendar</span></button>
-          <button class="nav-item" type="button" data-section="assignments"><span class="nav-icon" aria-hidden="true" data-icon="list"></span><span data-i18n="nav.assignments">Assignments</span></button>
-          <button class="nav-item" type="button" data-section="settings"><span class="nav-icon" aria-hidden="true" data-icon="settings"></span><span data-i18n="nav.settings">Settings</span></button>
+          <button class="nav-item active" type="button" data-section="dashboard">
+            <span class="nav-icon" aria-hidden="true" data-icon="grid"></span><span
+              data-i18n="nav.dashboard">Dashboard</span>
+          </button>
+          <button class="nav-item" type="button" data-section="schedule">
+            <span class="nav-icon" aria-hidden="true" data-icon="calendar"></span><span
+              data-i18n="nav.schedule">Schedule</span>
+          </button>
+          <button class="nav-item" type="button" data-section="calendar">
+            <span class="nav-icon" aria-hidden="true" data-icon="calendar-days"></span><span
+              data-i18n="nav.calendar">Calendar</span>
+          </button>
+          <button class="nav-item" type="button" data-section="assignments">
+            <span class="nav-icon" aria-hidden="true" data-icon="list"></span><span
+              data-i18n="nav.assignments">Assignments</span>
+          </button>
+          <button class="nav-item" type="button" data-section="settings">
+            <span class="nav-icon" aria-hidden="true" data-icon="settings"></span><span
+              data-i18n="nav.settings">Settings</span>
+          </button>
         </nav>
       </div>
 
       <div class="sidebar-bottom">
-        <div class="mini-note">
-          <span class="mini-note-dot"></span>
-          <div>
-            <strong data-i18n="sidebar.localFirst">Local-first</strong>
-            <p data-i18n="sidebar.localCopy">Your data stays in this browser.</p>
-          </div>
-        </div>
-        <span class="version-label">v1.4 • PRE-RELEASE</span>
+        <span class="version-label">v1.0 • RELEASE</span>
       </div>
     </aside>
 
@@ -69,13 +150,18 @@
 
     <main class="main-content">
       <header class="topbar">
-        <button class="icon-button mobile-menu" id="menuButton" type="button" aria-label="Open menu" aria-expanded="false">
+        <button class="icon-button mobile-menu" id="menuButton" type="button" aria-label="Open menu"
+          aria-expanded="false">
           <span class="nav-icon" data-icon="menu" aria-hidden="true"></span>
         </button>
-        <div class="topbar-title" id="topbarTitle">Teknik Informatika 2026 B</div>
+        <div class="topbar-title" id="topbarTitle">My class</div>
         <div class="topbar-actions">
-          <button class="language-button" id="languageButton" type="button" aria-label="Change language" title="Change language"><span id="languageCode">EN</span><span class="language-chevron" aria-hidden="true"></span></button>
-          <button class="icon-button install-button" id="installButton" type="button" aria-label="Install KELASIN" title="Install KELASIN" hidden></button>
+          <button class="language-button" id="languageButton" type="button" aria-label="Change language"
+            title="Change language">
+            <span id="languageCode">EN</span><span class="language-chevron" aria-hidden="true"></span>
+          </button>
+          <button class="icon-button install-button" id="installButton" type="button" aria-label="Install KELASIN"
+            title="Install KELASIN" hidden></button>
           <button class="icon-button" id="themeButton" type="button" aria-label="Switch to light mode"></button>
         </div>
       </header>
@@ -100,19 +186,29 @@
   <div class="confirm-backdrop hidden" id="confirmBackdrop">
     <section class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
       <div class="confirm-icon" id="confirmIcon"></div>
-      <p class="eyebrow" id="confirmEyebrow">CONFIRM</p>
-      <h2 id="confirmTitle">Are you sure?</h2>
+      <p class="eyebrow" id="confirmEyebrow" data-i18n="confirm.label">
+        CONFIRM
+      </p>
+      <h2 id="confirmTitle" data-i18n="confirm.deleteDataTitle">
+        Delete all data?
+      </h2>
       <p id="confirmMessage"></p>
       <div class="confirm-actions">
-        <button class="secondary-button" type="button" id="confirmCancel">Cancel</button>
-        <button class="primary-button danger-button" type="button" id="confirmProceed">Continue</button>
+        <button class="secondary-button" type="button" id="confirmCancel" data-i18n="confirm.cancel">
+          Cancel
+        </button>
+        <button class="primary-button danger-button" type="button" id="confirmProceed"
+          data-i18n="confirm.deleteAllData">
+          Delete all data
+        </button>
       </div>
     </section>
   </div>
 
-  <input id="importFileInput" type="file" accept="application/json,.json" hidden>
+  <input id="importFileInput" type="file" accept="application/json,.json" hidden />
   <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=1.6.5"></script>
 </body>
+
 </html>
