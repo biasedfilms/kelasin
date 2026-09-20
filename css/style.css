@@ -3257,6 +3257,14 @@ body {
     padding-left: max(15px, env(safe-area-inset-left));
     padding-right: max(15px, env(safe-area-inset-right));
   }
+  .input,
+  .select,
+  textarea {
+    font-size: 16px;
+  }
+  .modal {
+    max-height: min(760px, calc(100dvh - 36px));
+  }
   .page {
     padding-left: max(15px, env(safe-area-inset-left));
     padding-right: max(15px, env(safe-area-inset-right));
