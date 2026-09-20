@@ -2,6 +2,8 @@
 
 ### Your classes, assignments, and academic schedule in one place.
 
+**v1.4.0 pre-release : local-first class manager + PWA**
+
 **v1.0 Release**
 
 [View the KELASIN repository](https://github.com/biasedfilms/kelasin)
