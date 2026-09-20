@@ -1,4 +1,4 @@
-const CACHE_NAME = "kelasin-shell-v1-3-0";
+const CACHE_NAME = "kelasin-shell-v1-4-0";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -32,7 +32,6 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
-
   const requestURL = new URL(event.request.url);
   if (requestURL.origin !== self.location.origin) return;
 

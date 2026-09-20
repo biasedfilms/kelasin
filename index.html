@@ -2,21 +2,32 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0f1013">
+  <meta name="color-scheme" content="dark light">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="KELASIN">
-  <meta name="description" content="KELASIN — a lightweight class management app for university students.">
+  <meta name="description" content="KELASIN — a lightweight, local-first class dashboard for university students.">
+  <meta name="application-name" content="KELASIN">
+  <meta property="og:title" content="KELASIN — Class Dashboard">
+  <meta property="og:description" content="A lightweight, local-first class dashboard for university students.">
+  <meta property="og:image" content="assets/icon-512.png">
   <title>KELASIN — Class Dashboard</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="icon" href="assets/favicon.ico" sizes="any">
-  <link rel="icon" href="assets/favicon.ico" sizes="any">
   <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" sizes="180x180">
-  <script>try{const t=localStorage.getItem('kelasin-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+  <script>
+    try {
+      const theme = localStorage.getItem('kelasin-theme');
+      const language = localStorage.getItem('kelasin-language');
+      if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      if (language === 'id' || language === 'en') document.documentElement.lang = language;
+    } catch (_) {}
+  </script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -29,27 +40,16 @@
           </div>
           <div class="brand-copy">
             <strong>KELASIN</strong>
-            <span>Class dashboard</span>
+            <span data-i18n="brandSubtitle">Class dashboard</span>
           </div>
         </div>
 
-        <nav class="nav-list" aria-label="Main navigation">
-          <button class="nav-item active" type="button" data-section="dashboard">
-            <span class="nav-icon" aria-hidden="true" data-icon="grid"></span>
-            <span>Dashboard</span>
-          </button>
-          <button class="nav-item" type="button" data-section="schedule">
-            <span class="nav-icon" aria-hidden="true" data-icon="calendar"></span>
-            <span>Schedule</span>
-          </button>
-          <button class="nav-item" type="button" data-section="calendar">
-            <span class="nav-icon" aria-hidden="true" data-icon="calendar-days"></span>
-            <span>Calendar</span>
-          </button>
-          <button class="nav-item" type="button" data-section="assignments">
-            <span class="nav-icon" aria-hidden="true" data-icon="list"></span>
-            <span>Assignments</span>
-          </button>
+        <nav class="nav-list" aria-label="Main navigation" data-i18n-aria="nav.main">
+          <button class="nav-item active" type="button" data-section="dashboard"><span class="nav-icon" aria-hidden="true" data-icon="grid"></span><span data-i18n="nav.dashboard">Dashboard</span></button>
+          <button class="nav-item" type="button" data-section="schedule"><span class="nav-icon" aria-hidden="true" data-icon="calendar"></span><span data-i18n="nav.schedule">Schedule</span></button>
+          <button class="nav-item" type="button" data-section="calendar"><span class="nav-icon" aria-hidden="true" data-icon="calendar-days"></span><span data-i18n="nav.calendar">Calendar</span></button>
+          <button class="nav-item" type="button" data-section="assignments"><span class="nav-icon" aria-hidden="true" data-icon="list"></span><span data-i18n="nav.assignments">Assignments</span></button>
+          <button class="nav-item" type="button" data-section="settings"><span class="nav-icon" aria-hidden="true" data-icon="settings"></span><span data-i18n="nav.settings">Settings</span></button>
         </nav>
       </div>
 
@@ -57,11 +57,11 @@
         <div class="mini-note">
           <span class="mini-note-dot"></span>
           <div>
-            <strong>Local-first</strong>
-            <p>Your data stays in this browser.</p>
+            <strong data-i18n="sidebar.localFirst">Local-first</strong>
+            <p data-i18n="sidebar.localCopy">Your data stays in this browser.</p>
           </div>
         </div>
-        <span class="version-label">v1.2</span>
+        <span class="version-label">v1.4 • PRE-RELEASE</span>
       </div>
     </aside>
 
@@ -72,8 +72,9 @@
         <button class="icon-button mobile-menu" id="menuButton" type="button" aria-label="Open menu" aria-expanded="false">
           <span class="nav-icon" data-icon="menu" aria-hidden="true"></span>
         </button>
-        <div class="topbar-title" id="topbarTitle">Teknik Informatika 2026</div>
+        <div class="topbar-title" id="topbarTitle">Teknik Informatika 2026 B</div>
         <div class="topbar-actions">
+          <button class="language-button" id="languageButton" type="button" aria-label="Change language" title="Change language"><span id="languageCode">EN</span><span class="language-chevron" aria-hidden="true"></span></button>
           <button class="icon-button install-button" id="installButton" type="button" aria-label="Install KELASIN" title="Install KELASIN" hidden></button>
           <button class="icon-button" id="themeButton" type="button" aria-label="Switch to light mode"></button>
         </div>
@@ -96,6 +97,20 @@
     </section>
   </div>
 
+  <div class="confirm-backdrop hidden" id="confirmBackdrop">
+    <section class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="confirm-icon" id="confirmIcon"></div>
+      <p class="eyebrow" id="confirmEyebrow">CONFIRM</p>
+      <h2 id="confirmTitle">Are you sure?</h2>
+      <p id="confirmMessage"></p>
+      <div class="confirm-actions">
+        <button class="secondary-button" type="button" id="confirmCancel">Cancel</button>
+        <button class="primary-button danger-button" type="button" id="confirmProceed">Continue</button>
+      </div>
+    </section>
+  </div>
+
+  <input id="importFileInput" type="file" accept="application/json,.json" hidden>
   <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
 
   <script src="js/app.js"></script>
