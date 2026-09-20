@@ -1,6 +1,6 @@
 # KELASIN
 
-**v1.2 — polished web app + PWA**
+**v1.3 : polished web app + PWA**
 
 A small class management web app made for **Teknik Informatika 2026 B**.
 
