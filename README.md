@@ -1,6 +1,6 @@
 # KELASIN
 
-**v1.4.0 pre-release — local-first class manager + PWA**
+**v1.4.0 pre-release : local-first class manager + PWA**
 
 KELASIN is a small class management web app made for **Teknik Informatika 2026 B**.
 
@@ -128,6 +128,3 @@ This pre-release focuses on the final product feel rather than adding a large nu
 
 The project has been statically checked for JavaScript/service-worker syntax and core asset references. Browser-specific PWA behavior still depends on the browser and hosting environment.
 
-## Author
-
-Mikael — Informatics Engineering student
