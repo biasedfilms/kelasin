@@ -4,7 +4,7 @@
 
 **v1.0 Release**
 
-[View the KELASIN repository](https://github.com/biasedfilms/kelasin)
+[Open Kelasin ](https://www.kelasin.app)
 
 KELASIN is a student-focused, local-first class management app for organizing recurring classes, assignments, calendar activity, lecturers, subjects, and holidays in one focused workspace.
 
