@@ -102,3 +102,9 @@ KELASIN is a local browser app in its current version. Clearing browser site dat
 ## Author
 
 Mikael — Informatics Engineering student
+
+### v1.3
+- Added a month calendar synced with the recurring class schedule.
+- Selected-day agenda shows classes and assignments due on that date.
+- Added Today / previous / next month controls and quick class creation from a selected date.
+- Calendar data uses the same localStorage schedule; there is no second data source.

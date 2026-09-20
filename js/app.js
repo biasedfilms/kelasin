@@ -22,6 +22,8 @@ let modalState = null;
 let lastFocusedElement = null;
 let toastTimer = null;
 let deferredInstallPrompt = null;
+let calendarCursor = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+let selectedCalendarDate = isoDate(new Date());
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -197,6 +199,7 @@ function render(immediate = false) {
 
     if (currentSection === "dashboard") renderDashboard();
     if (currentSection === "schedule") renderSchedule();
+    if (currentSection === "calendar") renderCalendar();
     if (currentSection === "assignments") renderAssignments();
   };
 
@@ -321,7 +324,10 @@ function renderSchedule() {
   page.innerHTML = `
     <section class="hero">
       <div class="hero-main"><p class="eyebrow">Weekly view</p><h1>Schedule.</h1><p class="hero-copy">A simple timetable that is easy to change when your week changes.</p></div>
-      <button class="primary-button" type="button" data-action="add-schedule">${icon("plus")} Add class</button>
+      <div class="hero-actions">
+        <button class="secondary-button" type="button" data-section-link="calendar">${icon("calendar-days")} Calendar</button>
+        <button class="primary-button" type="button" data-action="add-schedule">${icon("plus")} Add class</button>
+      </div>
     </section>
 
     <article class="card schedule-card">
@@ -345,6 +351,126 @@ function renderScheduleRow(item) {
         <button class="icon-button small danger-hover" type="button" title="Delete class" aria-label="Delete ${escapeAttribute(item.subject)}" data-delete-schedule="${escapeAttribute(item.id)}">${icon("trash")}</button>
       </div>
     </div>
+  `;
+}
+
+
+function getDayNameForDate(date) {
+  const sundayBased = date.getDay();
+  return DAYS[sundayBased === 0 ? 6 : sundayBased - 1];
+}
+
+function getScheduleForDate(date) {
+  const day = getDayNameForDate(date);
+  return data.schedule
+    .filter(item => item.day === day)
+    .sort((a, b) => a.time.localeCompare(b.time));
+}
+
+function getAssignmentsForDate(date) {
+  const key = isoDate(date);
+  return sortAssignments(data.assignments.filter(item => item.dueDate === key));
+}
+
+function startOfMonth(date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function monthTitle(date) {
+  return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(date);
+}
+
+function formatSelectedDay(dateString) {
+  const date = new Date(`${dateString}T00:00:00`);
+  return new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric" }).format(date);
+}
+
+function renderCalendar() {
+  const monthStart = startOfMonth(calendarCursor);
+  const offset = (monthStart.getDay() + 6) % 7;
+  const daysInMonth = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() + 1, 0).getDate();
+  const cellCount = Math.ceil((offset + daysInMonth) / 7) * 7;
+  const todayKey = isoDate(new Date());
+  const selectedKey = selectedCalendarDate;
+  const selectedDate = new Date(`${selectedKey}T00:00:00`);
+  const selectedSchedule = getScheduleForDate(selectedDate);
+  const selectedAssignments = getAssignmentsForDate(selectedDate);
+  const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  const cells = Array.from({ length: cellCount }, (_, index) => {
+    const date = addDays(monthStart, index - offset);
+    const key = isoDate(date);
+    const inMonth = date.getMonth() === calendarCursor.getMonth();
+    const schedule = getScheduleForDate(date);
+    const due = getAssignmentsForDate(date);
+    const visibleEvents = schedule.slice(0, 2);
+    const moreCount = schedule.length - visibleEvents.length;
+
+    return `
+      <article class="calendar-day ${inMonth ? "" : "is-outside"} ${key === todayKey ? "is-today" : ""} ${key === selectedKey ? "is-selected" : ""}">
+        <button class="calendar-date-button" type="button" data-calendar-date="${key}" aria-label="${escapeAttribute(formatSelectedDay(key))}" aria-pressed="${key === selectedKey}">
+          <span>${date.getDate()}</span>
+          ${key === todayKey ? '<i class="calendar-today-dot" aria-hidden="true"></i>' : ''}
+        </button>
+        <div class="calendar-events">
+          ${visibleEvents.map(item => `<button class="calendar-event" type="button" data-calendar-edit-schedule="${escapeAttribute(item.id)}"><span>${escapeHtml(item.time)}</span><strong>${escapeHtml(item.subject)}</strong></button>`).join("")}
+          ${moreCount > 0 ? `<button class="calendar-more" type="button" data-calendar-date="${key}">+${moreCount} more</button>` : ''}
+          ${due.length ? `<button class="calendar-due" type="button" data-calendar-date="${key}">${due.length} ${due.length === 1 ? "due" : "due"}</button>` : ''}
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  page.innerHTML = `
+    <section class="hero calendar-hero">
+      <div class="hero-main"><p class="eyebrow">Month view</p><h1>Calendar.</h1><p class="hero-copy">Your weekly classes mapped onto real dates, with assignments shown where they are due.</p></div>
+      <div class="hero-actions">
+        <button class="secondary-button" type="button" data-calendar-action="today">Today</button>
+        <button class="primary-button" type="button" data-calendar-action="add-class">${icon("plus")} Add class</button>
+      </div>
+    </section>
+
+    <section class="calendar-layout">
+      <article class="card calendar-card">
+        <div class="calendar-toolbar">
+          <div class="calendar-title-wrap">
+            <button class="icon-button small" type="button" data-calendar-action="prev" aria-label="Previous month">${icon("chevron-left")}</button>
+            <h2>${escapeHtml(monthTitle(calendarCursor))}</h2>
+            <button class="icon-button small" type="button" data-calendar-action="next" aria-label="Next month">${icon("chevron-right")}</button>
+          </div>
+          <span class="calendar-hint">${data.schedule.length} ${data.schedule.length === 1 ? "class" : "classes"} in your weekly schedule</span>
+        </div>
+        <div class="calendar-grid calendar-weekdays" aria-hidden="true">${dayLabels.map(label => `<span>${label}</span>`).join("")}</div>
+        <div class="calendar-grid calendar-month-grid">${cells}</div>
+      </article>
+
+      <aside class="card calendar-agenda">
+        <div class="section-heading">
+          <div><p class="section-kicker">Selected day</p><h2>${escapeHtml(formatSelectedDay(selectedKey))}</h2></div>
+          <button class="link-button" type="button" data-calendar-action="add-class">${icon("plus")} Add</button>
+        </div>
+
+        <div class="agenda-block">
+          <div class="agenda-label"><span>Classes</span><span>${selectedSchedule.length}</span></div>
+          ${selectedSchedule.length ? `<div class="agenda-list">${selectedSchedule.map(item => `
+            <button class="agenda-item" type="button" data-calendar-edit-schedule="${escapeAttribute(item.id)}">
+              <span class="agenda-time">${escapeHtml(item.time)}</span>
+              <span class="agenda-copy"><strong>${escapeHtml(item.subject)}</strong><span>${escapeHtml(item.room || "No room set")} · ${escapeHtml(item.end)}</span></span>
+              ${icon("chevron-right")}
+            </button>`).join("")}</div>` : emptyState("No classes", "Nothing is scheduled for this day.")}
+        </div>
+
+        <div class="agenda-block">
+          <div class="agenda-label"><span>Assignments due</span><span>${selectedAssignments.length}</span></div>
+          ${selectedAssignments.length ? `<div class="agenda-list">${selectedAssignments.map(item => `
+            <button class="agenda-item" type="button" data-calendar-edit-assignment="${escapeAttribute(item.id)}">
+              <span class="agenda-dot ${item.done ? "is-done" : isOverdue(item) ? "is-overdue" : ""}"></span>
+              <span class="agenda-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.subject)} · ${item.done ? "Done" : isOverdue(item) ? "Overdue" : "Due today"}</span></span>
+              ${icon("chevron-right")}
+            </button>`).join("")}</div>` : emptyState("Nothing due", "No assignments are due on this date.")}
+        </div>
+      </aside>
+    </section>
   `;
 }
 
@@ -422,8 +548,8 @@ function emptyState(title, message) {
   return `<div class="empty"><div class="empty-icon">${icon("inbox")}</div><strong>${escapeHtml(title)}</strong><p>${escapeHtml(message)}</p></div>`;
 }
 
-function openModal(type, id = null) {
-  modalState = { type, id };
+function openModal(type, id = null, options = {}) {
+  modalState = { type, id, prefillDay: options.day || null };
   lastFocusedElement = document.activeElement;
   const item = id ? findItem(type, id) : null;
   const editing = Boolean(item);
@@ -434,7 +560,7 @@ function openModal(type, id = null) {
     ? `${editing ? "Edit" : "Add"} assignment`
     : `${editing ? "Edit" : "Add"} class`;
 
-  modalForm.innerHTML = isAssignment ? assignmentFormMarkup(item) : scheduleFormMarkup(item);
+  modalForm.innerHTML = isAssignment ? assignmentFormMarkup(item) : scheduleFormMarkup(item, modalState.prefillDay);
   modalBackdrop.classList.remove("hidden");
   modalBackdrop.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
@@ -457,12 +583,13 @@ function assignmentFormMarkup(item) {
   `;
 }
 
-function scheduleFormMarkup(item) {
+function scheduleFormMarkup(item, prefillDay = null) {
+  const selectedDay = item?.day || (prefillDay ? getDayNameForDate(new Date(`${prefillDay}T00:00:00`)) : "Monday");
   return `
     <div class="form-grid">
       <div class="field"><label for="classSubject">Subject</label><input class="input" id="classSubject" maxlength="60" required placeholder="e.g. Kalkulus" value="${escapeAttribute(item?.subject || "")}"><span class="field-error" data-error-for="classSubject"></span></div>
       <div class="form-two">
-        <div class="field"><label for="classDay">Day</label><select class="select" id="classDay">${DAYS.map(day => `<option ${item?.day === day ? "selected" : ""}>${day}</option>`).join("")}</select></div>
+        <div class="field"><label for="classDay">Day</label><select class="select" id="classDay">${DAYS.map(day => `<option ${selectedDay === day ? "selected" : ""}>${day}</option>`).join("")}</select></div>
         <div class="field"><label for="classRoom">Room</label><input class="input" id="classRoom" maxlength="30" placeholder="e.g. Lab 1" value="${escapeAttribute(item?.room || "")}"></div>
       </div>
       <div class="form-two">
@@ -635,6 +762,9 @@ function icon(name) {
   const icons = {
     grid: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>',
     calendar: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="2.5"></rect><line x1="16" y1="2.5" x2="16" y2="6.5"></line><line x1="8" y1="2.5" x2="8" y2="6.5"></line><line x1="3" y1="9" x2="21" y2="9"></line></svg>',
+    "calendar-days": '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="2.5"></rect><line x1="16" y1="2.5" x2="16" y2="6.5"></line><line x1="8" y1="2.5" x2="8" y2="6.5"></line><line x1="3" y1="9" x2="21" y2="9"></line><line x1="8" y1="13" x2="8" y2="13"></line><line x1="12" y1="13" x2="12" y2="13"></line><line x1="16" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="8" y2="17"></line><line x1="12" y1="17" x2="12" y2="17"></line><line x1="16" y1="17" x2="16" y2="17"></line></svg>',
+    "chevron-left": '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15,5 8,12 15,19"></polyline></svg>',
+    "chevron-right": '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9,5 16,12 9,19"></polyline></svg>',
     list: '<svg viewBox="0 0 24 24" aria-hidden="true"><line x1="8" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="20" y2="12"></line><line x1="8" y1="18" x2="20" y2="18"></line><circle cx="4" cy="6" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="4" cy="18" r="1"></circle></svg>',
     menu: '<svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>',
     sun: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="22"></line><line x1="2" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="22" y2="12"></line><line x1="4.9" y1="4.9" x2="7" y2="7"></line><line x1="17" y1="17" x2="19.1" y2="19.1"></line><line x1="17" y1="7" x2="19.1" y2="4.9"></line><line x1="4.9" y1="19.1" x2="7" y2="17"></line></svg>',
@@ -701,6 +831,7 @@ document.addEventListener("click", event => {
   const sectionLink = event.target.closest("[data-section-link]");
   if (sectionLink) {
     currentSection = sectionLink.dataset.sectionLink;
+    setSidebarOpen(false);
     render();
     return;
   }
@@ -711,6 +842,48 @@ document.addEventListener("click", event => {
     if (action === "add-assignment") openModal("assignment");
     if (action === "add-schedule") openModal("schedule");
     if (action === "reset-data") resetDemoData();
+    return;
+  }
+
+  const calendarAction = event.target.closest("[data-calendar-action]");
+  if (calendarAction) {
+    const action = calendarAction.dataset.calendarAction;
+    if (action === "prev") {
+      calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() - 1, 1);
+      renderCalendar();
+    }
+    if (action === "next") {
+      calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() + 1, 1);
+      renderCalendar();
+    }
+    if (action === "today") {
+      const today = new Date();
+      calendarCursor = new Date(today.getFullYear(), today.getMonth(), 1);
+      selectedCalendarDate = isoDate(today);
+      renderCalendar();
+    }
+    if (action === "add-class") {
+      openModal("schedule", null, { day: selectedCalendarDate });
+    }
+    return;
+  }
+
+  const calendarDate = event.target.closest("[data-calendar-date]");
+  if (calendarDate) {
+    selectedCalendarDate = calendarDate.dataset.calendarDate;
+    renderCalendar();
+    return;
+  }
+
+  const calendarSchedule = event.target.closest("[data-calendar-edit-schedule]");
+  if (calendarSchedule) {
+    openModal("schedule", calendarSchedule.dataset.calendarEditSchedule);
+    return;
+  }
+
+  const calendarAssignment = event.target.closest("[data-calendar-edit-assignment]");
+  if (calendarAssignment) {
+    openModal("assignment", calendarAssignment.dataset.calendarEditAssignment);
     return;
   }
 
