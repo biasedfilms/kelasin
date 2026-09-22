@@ -168,3 +168,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the detailed development history.
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Author
+
+**Mikael Kalesaran**
